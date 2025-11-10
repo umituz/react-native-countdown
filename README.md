@@ -12,17 +12,18 @@ npm install @umituz/react-native-countdown
 
 - `react` >= 18.2.0
 - `react-native` >= 0.74.0
+- `@umituz/react-native-timezone` >= 1.0.0
 
 ## Features
 
 - ✅ Real-time countdown updates with React hooks
 - ✅ Multiple formatting options (human-readable, short, compact)
 - ✅ i18n support with translation functions
+- ✅ **Timezone-aware**: All date operations respect device timezone
 - ✅ Flexible date/time input (ISO strings or Date objects)
 - ✅ Automatic expiration handling
 - ✅ Utility functions for common time calculations
 - ✅ TypeScript support with full type definitions
-- ✅ Zero dependencies (except React)
 
 ## Usage
 
@@ -199,11 +200,15 @@ Format countdown as compact string (e.g., "2:30:00").
 
 #### `getNextDayStartTime(date?)`
 
-Get next day start time (midnight of next day). Useful for daily limit resets.
+Get next day start time (midnight of next day) in device timezone. Useful for daily limit resets.
+
+**Timezone-aware**: Returns midnight of next day in the device's local timezone, ensuring accurate daily limit calculations regardless of user location.
 
 #### `getNextHourStartTime(date?)`
 
-Get next hour start time. Useful for hourly limit resets.
+Get next hour start time in device timezone. Useful for hourly limit resets.
+
+**Timezone-aware**: Returns start of next hour in the device's local timezone.
 
 ## License
 

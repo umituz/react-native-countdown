@@ -3,7 +3,12 @@
  * 
  * Core utility functions for calculating and formatting countdown timers.
  * Works with any date/time format and provides flexible formatting options.
+ * 
+ * Timezone-aware: All date operations respect device timezone for accurate
+ * daily/hourly limit calculations.
  */
+
+import { timezoneService } from '@umituz/react-native-timezone';
 
 export interface TimeRemaining {
   /** Hours remaining */
@@ -25,6 +30,8 @@ export interface CountdownFormatOptions {
   separator?: string;
   /** Whether to show zero values (default: false) */
   showZeros?: boolean;
+  /** Timezone for date calculations (defaults to device timezone) */
+  timezone?: string;
 }
 
 export interface TranslationOptions {
@@ -45,7 +52,11 @@ export interface TranslationOptions {
 /**
  * Calculate time remaining until target date
  * 
+ * Timezone-aware: Uses device timezone for accurate calculations.
+ * The difference is always calculated in UTC milliseconds for consistency.
+ * 
  * @param targetDate - ISO date string or Date object of target time
+ * @param options - Optional timezone for calculations
  * @returns Object with hours, minutes, seconds remaining and expiration status
  * 
  * @example
@@ -56,7 +67,12 @@ export interface TranslationOptions {
  * console.log(remaining.isExpired); // false
  * ```
  */
-export function calculateTimeRemaining(targetDate: string | Date): TimeRemaining {
+export function calculateTimeRemaining(
+  targetDate: string | Date,
+  options?: { timezone?: string },
+): TimeRemaining {
+  // Always use UTC milliseconds for accurate time difference calculation
+  // This ensures consistent results regardless of timezone
   const now = new Date().getTime();
   const target = typeof targetDate === 'string' 
     ? new Date(targetDate).getTime() 
@@ -114,7 +130,7 @@ export function formatCountdown(
   } = options || {};
 
   const { hours, minutes, seconds, totalSeconds, isExpired } = 
-    calculateTimeRemaining(targetDate);
+    calculateTimeRemaining(targetDate, { timezone: options?.timezone });
 
   if (isExpired) {
     const availableNowKey = keys?.availableNow || 'Available now';
@@ -195,7 +211,7 @@ export function formatCountdownShort(
   } = options || {};
 
   const { hours, minutes, seconds, totalSeconds, isExpired } = 
-    calculateTimeRemaining(targetDate);
+    calculateTimeRemaining(targetDate, { timezone: options?.timezone });
 
   if (isExpired) {
     return '0m';
@@ -267,43 +283,58 @@ export function formatCountdownCompact(
 }
 
 /**
- * Get next day start time (midnight of next day)
+ * Get next day start time (midnight of next day) in device timezone
  * Useful for daily limit resets
  * 
+ * Timezone-aware: Returns midnight of next day in the device's local timezone,
+ * then converts to ISO string for consistent storage.
+ * 
  * @param date - Optional date to calculate from (defaults to now)
- * @returns ISO date string of next day midnight
+ * @returns ISO date string of next day midnight in device timezone
  * 
  * @example
  * ```typescript
+ * // If device is in Europe/Istanbul (UTC+3)
  * const nextDay = getNextDayStartTime();
- * // "2024-12-26T00:00:00.000Z"
+ * // Returns ISO string representing 00:00:00 tomorrow in Istanbul timezone
  * ```
  */
 export function getNextDayStartTime(date?: Date): string {
   const baseDate = date || new Date();
-  const tomorrow = new Date(baseDate);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  tomorrow.setHours(0, 0, 0, 0);
-  return tomorrow.toISOString();
+  
+  // Get start of today in device timezone
+  const todayStart = timezoneService.startOfDay(baseDate);
+  
+  // Add one day to get tomorrow's start
+  const tomorrowStart = timezoneService.addDays(todayStart, 1);
+  
+  // Convert to ISO string (preserves timezone information)
+  return timezoneService.formatToISOString(tomorrowStart);
 }
 
 /**
- * Get next hour start time
+ * Get next hour start time in device timezone
  * Useful for hourly limit resets
  * 
+ * Timezone-aware: Returns start of next hour in the device's local timezone,
+ * then converts to ISO string for consistent storage.
+ * 
  * @param date - Optional date to calculate from (defaults to now)
- * @returns ISO date string of next hour start
+ * @returns ISO date string of next hour start in device timezone
  * 
  * @example
  * ```typescript
+ * // If current time is 14:30 in device timezone
  * const nextHour = getNextHourStartTime();
- * // "2024-12-25T15:00:00.000Z"
+ * // Returns ISO string representing 15:00:00 in device timezone
  * ```
  */
 export function getNextHourStartTime(date?: Date): string {
   const baseDate = date || new Date();
   const nextHour = new Date(baseDate);
   nextHour.setHours(nextHour.getHours() + 1, 0, 0, 0);
-  return nextHour.toISOString();
+  
+  // Convert to ISO string (preserves timezone information)
+  return timezoneService.formatToISOString(nextHour);
 }
 

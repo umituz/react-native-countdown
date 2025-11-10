@@ -28,7 +28,8 @@
   },
   "peerDependencies": {
     "react": ">=18.2.0",
-    "react-native": ">=0.74.0"
+    "react-native": ">=0.74.0",
+    "@umituz/react-native-timezone": ">=1.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.45",

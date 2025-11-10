@@ -86,7 +86,7 @@ export function useCountdown(
         isExpired: true,
       };
     }
-    return calculateTimeRemaining(currentTarget);
+    return calculateTimeRemaining(currentTarget, { timezone: formatOptions?.timezone });
   });
 
   // Update countdown
@@ -102,14 +102,14 @@ export function useCountdown(
       return;
     }
 
-    const remaining = calculateTimeRemaining(currentTarget);
+    const remaining = calculateTimeRemaining(currentTarget, { timezone: formatOptions?.timezone });
     setTimeRemaining(remaining);
 
     // Call onExpire callback when countdown expires
     if (remaining.isExpired && onExpire) {
       onExpire();
     }
-  }, [currentTarget, onExpire]);
+  }, [currentTarget, onExpire, formatOptions?.timezone]);
 
   // Effect for automatic updates
   useEffect(() => {
