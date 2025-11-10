@@ -13,7 +13,7 @@ import {
   type TimeRemaining,
   type CountdownFormatOptions,
   type TranslationOptions,
-} from '../utils/countdownUtils';
+} from '../../utils/countdownUtils';
 
 export interface UseCountdownOptions extends CountdownFormatOptions, TranslationOptions {
   /** Update interval in milliseconds (default: 1000) */
