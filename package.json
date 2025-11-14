@@ -1,6 +1,6 @@
 {
   "name": "@umituz/react-native-countdown",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Countdown utilities and React hooks for React Native apps with time formatting and real-time updates",
   "main": "./src/index.ts",
   "types": "./src/index.ts",

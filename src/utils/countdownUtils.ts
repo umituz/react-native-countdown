@@ -255,7 +255,7 @@ export function formatCountdownShort(
  */
 export function formatCountdownCompact(
   targetDate: string | Date,
-  options?: {
+  options?: CountdownFormatOptions & {
     /** Whether to show hours (default: true) */
     showHours?: boolean;
     /** Whether to show seconds (default: true) */
